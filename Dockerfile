@@ -67,7 +67,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     rm /requirements.txt
 
 ADD src .
-
+RUN pip install open-clip-torch==2.20.0
 COPY builder/cache.py /stable-diffusion-webui/cache.py
 RUN cd /stable-diffusion-webui && python cache.py --use-cpu=all --ckpt /model.safetensors
 
