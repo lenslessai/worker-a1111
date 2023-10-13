@@ -37,8 +37,8 @@ def run_inference(inference_request):
     api_name = inference_request["api_name"]
     api_method = inference_request["api_method"]
 
-    if api_name == "txt2img":
-       automatic_session.post(url=f'{LOCAL_URL}/refresh_loras', json={}, timeout=600)
+    print("lora refreshed")
+    automatic_session.post(url=f'{LOCAL_URL}/refresh_loras', json={}, timeout=600)
 
     if api_method == "GET":
         response = automatic_session.get(url=f'{LOCAL_URL}/{api_name}', timeout=600)
