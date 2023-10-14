@@ -70,7 +70,7 @@ ADD src .
 RUN pip install open-clip-torch==2.20.0
 COPY builder/cache.py /stable-diffusion-webui/cache.py
 RUN cd /stable-diffusion-webui && python cache.py --use-cpu=all --ckpt /model.safetensors
-RUN ln -s /workspace/models/Lora /stable-diffusion-webui/models/Lora
+RUN rm -rf /stable-diffusion-webui/models/Lora && ln -s /workspace/models/Lora /stable-diffusion-webui/models
 
 # Cleanup section (Worker Template)
 RUN apt-get autoremove -y && \
