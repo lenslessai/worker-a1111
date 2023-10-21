@@ -36,25 +36,28 @@ def run_inference(inference_request):
     Run inference on a request.
     '''
 
+    automatic_session.post(url=f'{LOCAL_URL}/options', json={'sd_vae':'sdxl_vae.safetensors'}, timeout=600)
     print("inference_request:")
     print(inference_request)
     api_name = inference_request["api_name"]
     api_method = inference_request["api_method"]
-    lora_model_name = inference_request["lora_model_name"]
-    user_id = inference_request["user_id"]
+    if api_method == "POST" and api_name == "txt2img":
 
-    lora_model_name_in_volume = user_id + "_" + lora_model_name
-    if dir_size_in_mb("/runpod-volume") > 8000:
-      remove_3_oldest_files("/runpod-volume/models/Lora")
+        lora_model_name = inference_request["lora_model_name"]
+        user_id = inference_request["user_id"]
 
-    if not os.path.exists("/runpod-volume/models/Lora/"+lora_model_name_in_volume):
-      print("model "+lora_model_name_in_volume+" not found. Starting to download model")
-      download_model(user_id, lora_model_name, lora_model_name_in_volume)
+        lora_model_name_in_volume = user_id + "_" + lora_model_name
+        if dir_size_in_mb("/runpod-volume") > 8000:
+            remove_3_oldest_files("/runpod-volume/models/Lora")
 
-     
-    inference_request["a1111_body"]["prompt"] += " <lora:"+ remove_suffix_safetensors_suffix(lora_model_name_in_volume) + ":1>"
-    print("inference_request after processing:")
-    print(inference_request)
+        if not os.path.exists("/runpod-volume/models/Lora/"+lora_model_name_in_volume):
+            print("model "+lora_model_name_in_volume+" not found. Starting to download model")
+            zdownload_model(user_id, lora_model_name, lora_model_name_in_volume)
+
+        
+        inference_request["a1111_body"]["prompt"] += " <lora:"+ remove_suffix_safetensors_suffix(lora_model_name_in_volume) + ":1>"
+        print("inference_request after processing:")
+        print(inference_request)
     if api_method == "GET":
         response = automatic_session.get(url=f'{LOCAL_URL}/{api_name}', timeout=600)
     else:
