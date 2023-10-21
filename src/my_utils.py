@@ -6,15 +6,16 @@ def dir_size_in_mb(path):
     for path, dirs, files in os.walk(path):
         size = 0
         for f in files:
-            print(f)
             fp = os.path.join(path, f)
             size += os.path.getsize(fp)
-
+    
+    print("models total size is " + str(size/1024/1024) + " mb")
     return size/1024/1024
 
 
 
 def remove_3_oldest_files(path = "/runpod-volume/models/Lora"):
+    print("Started to remove 3 oldest model files")
     files = glob.glob(os.path.join(path, '*'))
     files.sort(key=os.path.getmtime, reverse=True)
 
@@ -49,3 +50,11 @@ def download_model(user_id, model_name, model_name_in_volume):
 
     s3 = session.client('s3')
     s3.download_file(bucket_name, "models/"+user_id+"/"+model_name, "/runpod-volume/models/Lora/"+model_name_in_volume)
+    print(model_name_in_volume + " downloaded")
+
+
+def remove_suffix_safetensors_suffix(input_string):
+    if input_string.endswith(".safetensors"):
+        return input_string[:-12]  # Remove the last 12 characters
+    else:
+        return input_string

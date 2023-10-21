@@ -3,7 +3,7 @@ import runpod
 import os
 import requests
 from requests.adapters import HTTPAdapter, Retry
-from my_utils import dir_size_in_mb, remove_3_oldest_files, download_model 
+from my_utils import dir_size_in_mb, remove_3_oldest_files, download_model, remove_suffix_safetensors_suffix
 
 LOCAL_URL = "http://127.0.0.1:3000/sdapi/v1"
 
@@ -36,7 +36,7 @@ def run_inference(inference_request):
     Run inference on a request.
     '''
 
-    print("inference_request:\n")
+    print("inference_request:")
     print(inference_request)
     api_name = inference_request["api_name"]
     api_method = inference_request["api_method"]
@@ -47,11 +47,14 @@ def run_inference(inference_request):
     if dir_size_in_mb("/runpod-volume") > 8000:
       remove_3_oldest_files("/runpod-volume/models/Lora")
 
-    if not os.path.exists(lora_model_name_in_volume):
+    if not os.path.exists("/runpod-volume/models/Lora/"+lora_model_name_in_volume):
+      print("model "+lora_model_name_in_volume+" not found. Starting to download model")
       download_model(user_id, lora_model_name, lora_model_name_in_volume)
 
      
-    inference_request["a1111_body"]["prompt"] += " <lora:"+ lora_model_name_in_volume + ":1>"
+    inference_request["a1111_body"]["prompt"] += " <lora:"+ remove_suffix_safetensors_suffix(lora_model_name_in_volume) + ":1>"
+    print("inference_request after processing:")
+    print(inference_request)
     if api_method == "GET":
         response = automatic_session.get(url=f'{LOCAL_URL}/{api_name}', timeout=600)
     else:
