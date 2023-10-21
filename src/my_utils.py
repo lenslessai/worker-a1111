@@ -1,5 +1,6 @@
 import os
 import glob
+import boto3
 
 def dir_size_in_mb(path):
     for path, dirs, files in os.walk(path):
