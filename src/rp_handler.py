@@ -36,7 +36,7 @@ def run_inference(inference_request):
     Run inference on a request.
     '''
 
-    automatic_session.post(url=f'{LOCAL_URL}/options', json={'sd_vae':'sdxl_vae.safetensors'}, timeout=600)
+    #automatic_session.post(url=f'{LOCAL_URL}/options', json={'sd_vae':'sdxl_vae.safetensors'}, timeout=600)
     print("inference_request:")
     print(inference_request)
     api_name = inference_request["api_name"]
@@ -52,9 +52,8 @@ def run_inference(inference_request):
 
         if not os.path.exists("/runpod-volume/models/Lora/"+lora_model_name_in_volume):
             print("model "+lora_model_name_in_volume+" not found. Starting to download model")
-            zdownload_model(user_id, lora_model_name, lora_model_name_in_volume)
+            download_model(user_id, lora_model_name, lora_model_name_in_volume)
 
-        
         inference_request["a1111_body"]["prompt"] += " <lora:"+ remove_suffix_safetensors_suffix(lora_model_name_in_volume) + ":1>"
         print("inference_request after processing:")
         print(inference_request)
